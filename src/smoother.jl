@@ -1,13 +1,14 @@
-function kalmansmoother(fo::FilterOutput)
-    T  = length(fo.y)
-    ks = SmootherOutput(fo.y, fo.x, fo.P, fo.H, fo.A, fo.Q, fo.R)
-    A  = fo.A
-    println(fo.x[1:5,:])
+function kalmansmoother(model::Model, priors::Output, posteriors::Output)
+    T, m = size(posteriors.x)
+    ks = Output(T, m)
+    xt = priors.x[T + 1, :]
+    Pt = priors.x[T + 1, :, :]
     for t in T:-1:1
-        C             = fo.P[t, :, :] * A' * inv(fo.P[t + 1, :, :])
-        ks.x[t, :]    = fo.x[t, :] + C * (ks.x[t + 1, :] - A * fo.x[t + 1, :])
-        ks.P[t, :, :] = fo.P[t, :, :] + C * (ks.P[t + 1, :, :] - fo.P[t + 1, :, :]) * C'
+        C             = posteriors.P[t, :, :] * model.A' * inv(priors.P[t + 1, :, :])
+        ks.x[t, :]    = posteriors.x[t, :] + C * (xt - priors.x[t + 1, :])
+        ks.P[t, :, :] = posteriors.P[t, :, :] + C * (Pt - priors.P[t + 1, :, :]) * C'
+        xt = ks.x[t, :]
+        Pt = ks.P[t, :, :]
     end
-    println(ks.x[1:5,:])
     return ks
 end

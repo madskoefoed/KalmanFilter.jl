@@ -1,13 +1,22 @@
-function kalmanfilter(kf::KalmanFilter)
-    T  = length(kf.y)
-    fo = FilterOutput(kf.y, kf.x, kf.P, kf.H, kf.A, kf.Q, kf.R)
+function kalmanfilter(model::Model, priors::Priors)
+    x = priors.x
+    P = priors.P
+    T = length(model.y)
+    m = length(x)
+    
+    # Prepare priors and posteriors
+    priors     = Output(T + 1, m)
+    posteriors = Output(T, m)
+    priors.x[1, :]    = x
+    priors.P[1, :, :] = P
+
     for t in 1:T
-        # Time update
-        fo.x[t + 1, :], fo.P[t + 1, :, :] = time_update(fo.x[t, :], fo.P[t, :, :], fo.A, fo.Q)
         # Measurement update
-        fo.x[t + 1, :], fo.P[t + 1, :, :] = measurement_update(fo.y[t], fo.x[t + 1, :], fo.P[t + 1, :, :], fo.H, fo.R)
+        posteriors.x[t, :], posteriors.P[t, :, :] = measurement_update(model.y[t], priors.x[t, :], priors.P[t, :, :], model.H, model.R)
+        # Time update
+        priors.x[t + 1, :], priors.P[t + 1, :, :] = time_update(posteriors.x[t, :], posteriors.P[t, :, :], model.A, model.Q)
     end
-    return fo
+    return (priors = priors, posteriors = posteriors)
 end
 
 function time_update(x, P, A, Q)
