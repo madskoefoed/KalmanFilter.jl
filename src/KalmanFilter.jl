@@ -5,12 +5,12 @@ using LinearAlgebra, Distributions
 include("src/types.jl")
 include("src/filter.jl")
 include("src/smoother.jl")
-include("example/local_level.jl")
+include("example/example.jl")
 
 # Export types
-export KalmanFilter
+export Model, Priors, Output
 
 # Export functions
-export filter, smooth
+export kalmanfilter, kalmansmooth
 
 end # module
