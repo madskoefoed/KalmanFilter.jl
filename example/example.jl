@@ -1,6 +1,6 @@
 using Plots
 T = 100
-σ = 0.25
+σ = 0.2
 t = range(0, 20, length = T)
 h = (t[end] - t[1])/T
 H = [1.0, 0.0, 0.0]

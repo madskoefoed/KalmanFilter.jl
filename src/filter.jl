@@ -7,8 +7,9 @@ function kalmanfilter(model::Model, priors::Priors)
     # Prepare priors and posteriors
     priors     = Output(T + 1, m)
     posteriors = Output(T, m)
-    priors.x[1, :]    = x
-    priors.P[1, :, :] = P
+    #priors.x[1, :]    = x
+    #priors.P[1, :, :] = P
+    priors.x[1, :], priors.P[1, :, :] = time_update(x, P, model.A, model.Q)
 
     for t in 1:T
         # Measurement update
