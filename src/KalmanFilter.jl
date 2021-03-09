@@ -5,7 +5,8 @@ using LinearAlgebra, Distributions
 include("src/types.jl")
 include("src/filter.jl")
 include("src/smoother.jl")
-include("example/example.jl")
+include("example/local_level.jl")
+include("example/kca.jl")
 
 # Export types
 export Model, Priors, Output
