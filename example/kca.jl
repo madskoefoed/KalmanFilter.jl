@@ -16,14 +16,14 @@ ks = kalmansmoother(m, kf.priors, kf.posteriors)
 
 using Plots
 
-scatter(y, label = "Measurements", linewidth = 2, legend = :bottom, ylim = [-3, 2],
+scatter(y, label = "Measurements", legend = :bottom, ylim = [-3, 2],
         markerstrokewidth = 0, markercolor = "black", foreground_color_legend = nothing)
-plot!(s, label = "Noiseless signal", linewidth = 2, color = "grey")
-plot!(kf.priors.μ, label = "Prediction", linewidth = 1, color = "blue")
-plot!(kf.posteriors.μ, label = "Filter", linewidth = 1, color = "red")
-plot!(ks.μ, label = "Smoother", linewidth = 1, color = "green")
+plot!(s, label = "Noiseless signal", linewidth = 3, color = "grey")
+plot!(kf.priors.μ, label = "Prediction", linewidth = 2, color = "blue")
+plot!(kf.posteriors.μ, label = "Filter", linewidth = 2, color = "red")
+plot!(ks.μ, label = "Smoother", linewidth = 2, color = "green")
 
-scatter(y, label = "Measurements", linewidth = 2, legend = :bottom, ylim = [-3, 2],
+scatter(y, label = "Measurements", legend = :bottom, ylim = [-3, 2],
         markerstrokewidth = 0, markercolor = "black", foreground_color_legend = nothing)
-plot!(s, label = "Noiseless signal", linewidth = 2, color = "grey")
-plot!(ks.x, label = ["Position" "Velocity" "Acceleration"], linewidth = 1, color = ["blue" "red" "green"])
+plot!(s, label = "Noiseless signal", linewidth = 3, color = "grey")
+plot!(ks.x, label = ["Position" "Velocity" "Acceleration"], linewidth = 2, color = ["blue" "red" "green"])
