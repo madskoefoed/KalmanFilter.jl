@@ -19,6 +19,7 @@ mutable struct Model
 
         @assert all(diag(R) .> 0) "All diagonal elements of R must be strictly positive."
         @assert all(diag(Q) .> 0) "All diagonal elements of Q must be strictly positive."
+        @assert all(diag(P) .> 0) "All diagonal elements of P must be strictly positive."
         return new(y, H, A, Q, R, x, P)
     end
 end
@@ -27,8 +28,8 @@ end
 Model(y::Vector, H::Vector, A::Matrix, Q::Matrix, R::Real, x::Vector, P::Matrix) = Model(repeat(y, 1, 1), reshape(H, 1, length(H)), A, Q, fill(R, 1, 1), x, P)
 Model(y::Vector, H::Real, A::Real, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), fill(H, 1, 1), fill(A, 1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
 
-# Outer constructors for univariate state
-#Model(y::Matrix, H::Vector, A::Real, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, reshape(H, 1, length(H)), fill(A, 1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
+# Univariate state
+Model(y::Matrix, H::Matrix, A::Real, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, H, fill(A, 1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
 
 # Special constructors
 LocalLevel(y::Vector, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))

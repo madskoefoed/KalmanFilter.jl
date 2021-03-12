@@ -9,7 +9,7 @@ include("example/local_level.jl")
 include("example/kca.jl")
 
 # Export types
-export Model, Priors, Output
+export Model, Output
 
 # Export functions
 export kalmanfilter, kalmansmooth
