@@ -1,3 +1,19 @@
+"""
+```
+Model(y, H, A, Q, R, x P)
+```
+
+The type Model contains the measurements matrix as well as the kalman setup:
+Measurement:  y(t)     = H * x(t) + e(t) ~ N(0, R)
+State:        x(t + 1) = A * x(t) + n(t) ~ N(0, Q)
+
+where both y(t) and x(t+1) are vectors of length p and m, respectively.
+The state transition matrix, A, is (m x m) while the measurement model matrix, H, is (p x m).
+
+Time-varying H and A are not currently implemented. Similarly, the covariances
+R and Q are constant across time.
+"""
+
 mutable struct Model
     y::Matrix{<:Real}
     H::Matrix{<:Real}
@@ -34,6 +50,19 @@ Model(y::Matrix, H::Matrix, A::Real, Q::Real, R::Matrix, x::Real, P::Real) = Mod
 # Special constructors
 LocalLevel(y::Vector, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
 LocalLevel(y::Matrix, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, ones(size(y, 2), 1), ones(1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
+
+"""
+```
+Output
+```
+
+The type Output contains the means and covariances for the measurements
+and states, respectively, at each time step, t = 1,...,T:
+x is a (T x m) matrix of state means
+P is a (T x m x m) array of state covariances
+μ is a (T x p) matrix of measurement means
+Σ is a (T x p x p) matrix of measurement covariances
+"""
 
 mutable struct Output
     x::Matrix{AbstractFloat}

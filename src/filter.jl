@@ -1,3 +1,16 @@
+"""
+```
+Kalman Filter(Model)
+```
+
+Takes as input the type Model, which contains the measurement matrix
+as well as the model specification and initial values (x0 and P0).
+
+The function returns two sets of the type Output, containing the means
+and covariances for the measurements and states for the prior and posterior,
+respectively.
+"""
+
 function kalmanfilter(model::Model)
     x = model.x
     P = model.P

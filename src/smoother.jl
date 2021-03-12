@@ -1,10 +1,14 @@
-# StateSpaceModels
-# y(t)   = Z(t) * a(t) + e(t)        ~ N(0, H)
-# a(t+1) = T(t) * a(t) + R(t) * n(t) ~ N(0, Q)
+"""
+```
+Kalman Smoother(Model, Output, Output)
+```
 
-# Mine
-# y(t)     = H * x(t) + e ~ N(0, R)
-# x(t + 1) = A * x(t) + n ~ N(0, Q)
+Takes as input the output from the Kalman Filter, i.e. the priors
+and posteriors of the means and covariances of the states and measurements.
+
+The function returns the type Output which smoothed means and covariances
+for the states and measurements, respectively.
+"""
 
 function kalmansmoother(model::Model, priors::Output, posteriors::Output)
     T, p = size(model.y)
