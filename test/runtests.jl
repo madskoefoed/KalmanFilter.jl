@@ -3,29 +3,43 @@ using LinearAlgebra
 using KalmanFilter
 using Test
 
-@testset "Example" begin
-    
-    T = 10_000
-    σ = 0.5
-    t = range(0, 20, length = T)
-    h = (t[end] - t[1])/T
-    H = [1.0, 0.0, 0.0]
-    A = [1.0 h   0.5*h^2;
-         0.0 1.0 h;
-         0.0 0.0 1.0]
-    s = sin.(t)
-    y = s + randn(T) * σ
-    
-    m = Model(y, H, A, Matrix(0.1*I, 3, 3), σ^2)
-    p = Priors([0.0, 0.0, 0.0], Matrix(1000.0I, 3, 3))
-    kf = kalmanfilter(m, p)
-    ks = kalmansmoother(m, kf.priors, kf.posteriors)
+@testset "Dimensions check" begin
+    M = 1:3
+    P = 1:3
+    for p in P
+        for m in M
+            y = rand(10, p)
+            H = rand(p, m)
+            A = rand(m, m)
+            Q = Matrix(Diagonal(fill(1.0, m)))
+            R = Matrix(Diagonal(fill(1.0, p)))
+            x = rand(m)
+            P = Matrix(Diagonal(fill(1.0, m)))
+            model = Model(y, H, A, Q, R, x, P)
 
+            # Test p dimension
+            @test p == size(model.H, 1) == size(model.R, 1) == size(model.R, 2)
+            # Test m dimension
+            @test m == size(model.H, 2) == size(model.Q, 1) == size(model.Q, 2) == length(model.x) == size(model.P, 1) == size(model.P, 2) == size(model.A,1) == size(model.A, 2)
+        end
+    end
+end
+
+@testset "Univairate Local Level" begin
+    T = 100
+    Q = 0.1
+    R = 4.0
+    x = 0.0
+    P = 1000.0
+    y = rand(Normal(0.0, sqrt(R)), T)
+
+    model = LocalLevel(y, Q, R, x, P)
+    kf = kalmanfilter(model)
+    ks = kalmansmoother(model, kf.priors, kf.posteriors)
+
+    @test isapprox(kf.posteriors.x[end, 1], ks.x[end, 1])
     @test isapprox(kf.posteriors.P[end, 1, 1], ks.P[end, 1, 1])
-    @test isapprox(kf.posteriors.P[end, 2, 2], ks.P[end, 2, 2])
-    @test isapprox(kf.posteriors.P[end, 3, 3], ks.P[end, 3, 3])
 
-    RMSE = mean((y - kf.priors.x[1:end-1, :] * m.H).^2)
-
-    #@test isapprox(RMSE, σ + )
+    @test isapprox(model.H[1, 1], 1.0)
+    @test isapprox(model.A[1, 1], 1.0)
 end
