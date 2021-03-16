@@ -37,9 +37,11 @@ end
     kf = kalmanfilter(model)
     ks = kalmansmoother(model, kf.priors, kf.posteriors)
 
+    # Test posterior = smoother at time T
     @test isapprox(kf.posteriors.x[end, 1], ks.x[end, 1])
     @test isapprox(kf.posteriors.P[end, 1, 1], ks.P[end, 1, 1])
 
+    # Test H and A
     @test isapprox(model.H[1, 1], 1.0)
     @test isapprox(model.A[1, 1], 1.0)
 end

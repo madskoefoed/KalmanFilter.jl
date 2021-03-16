@@ -50,6 +50,8 @@ Model(y::Matrix, H::Matrix, A::Real, Q::Real, R::Matrix, x::Real, P::Real) = Mod
 # Special constructors
 LocalLevel(y::Vector, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
 LocalLevel(y::Matrix, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, ones(size(y, 2), 1), ones(1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
+LocalLevel(y::Vector, Q::Real, R::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [y[1]], fill(1000.0, 1, 1))
+LocalLevel(y::Matrix, Q::Real, R::Matrix) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), R, [y[1]], fill(1000.0, 1, 1))
 
 """
 ```
