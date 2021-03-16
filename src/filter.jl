@@ -6,7 +6,7 @@ Kalman Filter(Model)
 Takes as input the type Model, which contains the measurement matrix
 as well as the model specification and initial values (x0 and P0).
 
-The function returns two sets of the type Output, containing the means
+The function returns the types Prior and Posterior, containing the means
 and covariances for the measurements and states for the prior and posterior,
 respectively.
 """
@@ -17,20 +17,20 @@ function kalmanfilter(model::Model)
     T, p = size(model.y)
     m = length(x)
 
-    # Prepare priors and posteriors
-    priors     = Output(T, p, m)
-    posteriors = Output(T, p, m)
+    # Store predicted and filtered values
+    filt = Filtered(T, p, m)
+    pred = Predicted(T, p, m)
 
     for t in 1:T
         # Prediction
         x, P, μ, Σ = time_update(x, P, model.H, model.A, model.Q, model.R)
-        priors.x[t, :], priors.P[t, :, :], priors.μ[t, :], priors.Σ[t, :, :] = x, P, μ, Σ
+        pred.x[t, :], pred.P[t, :, :], pred.μ[t, :], pred.Σ[t, :, :] = x, P, μ, Σ
 
         # Update
-        x, P, μ, Σ = measurement_update(y[t, :], x, P, model.H, μ, Σ, model.R)
-        posteriors.x[t, :], posteriors.P[t, :, :], posteriors.μ[t, :], posteriors.Σ[t, :, :] = x, P, μ, Σ
+        x, P, μ, Σ = measurement_update(model.y[t, :], x, P, model.H, μ, Σ, model.R)
+        filt.x[t, :], filt.P[t, :, :], filt.μ[t, :], filt.Σ[t, :, :] = x, P, μ, Σ
     end
-    return (priors = priors, posteriors = posteriors)
+    return (predicted = pred, filtered = filt)
 end
 
 predict_x(x, A) = A * x                # Predicted state mean

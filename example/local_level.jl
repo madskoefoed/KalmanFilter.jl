@@ -1,36 +1,24 @@
 using Plots
 using Random
 
-# Define random seed
-rng = MersenneTwister(123456)
-
 # Number of observations
-T = 100
+T = 50
 
 # Variances
-Q = 1.0
+Q = 0.1
 R = 0.5
 
-# Distributions of state and observation
-xd = Normal(0.0, sqrt(Q))
-yd = Normal(0.0, sqrt(R))
-
-# Initialization at time t = 1
-x = zeros(T)
-y = zeros(T)
-for t = 2:T
-        x[t] = x[t - 1] + rand(rng, xd)
-        y[t] = x[t] + rand(rng, yd)
-end
-
 # Define model with prior N(0, 1000)
-m = LocalLevel(y, Q, R)
+model = LocalLevel(zeros(T), Q, R)
+
+# Simulate
+model.y, x = simulate(model)
 
 # Filter
-kf = kalmanfilter(m)
+kf = kalmanfilter(model)
 
 # Smoother
-ks = kalmansmoother(m, kf.priors, kf.posteriors)
+ks = kalmansmoother(model, kf.priors, kf.posteriors)
 
 # Plot
 scatter(y, label = "Measurements", legend = :topright, title = "Univariate local level model",

@@ -1,6 +1,6 @@
 """
 ```
-Model(y, H, A, Q, R, x P)
+Model(y, H, A, Q, R, x, P)
 ```
 
 The type Model contains the measurements matrix as well as the kalman setup:
@@ -22,6 +22,9 @@ mutable struct Model
     R::Matrix{<:Real}
     x::Vector{<:Real}
     P::Matrix{<:Real}
+    predicted::Predicted
+    filtered::Filtered
+    smoothed::Smoothed
     function Model(y, H, A, Q, R, x, P)
         str = "y is $(size(y, 1))x$(size(y, 2)), " *
               "H is $(size(H, 1))x$(size(H, 2)), " *
@@ -36,7 +39,12 @@ mutable struct Model
         @assert all(diag(R) .> 0) "All diagonal elements of R must be strictly positive."
         @assert all(diag(Q) .> 0) "All diagonal elements of Q must be strictly positive."
         @assert all(diag(P) .> 0) "All diagonal elements of P must be strictly positive."
-        return new(y, H, A, Q, R, x, P)
+
+        predicted = Predicted(size(y, 1), size(y, 2), length(x))
+        filtered  = Filtered( size(y, 1), size(y, 2), length(x))
+        smoothed  = Smoothed( size(y, 1), size(y, 2), length(x))
+
+        return new(y, H, A, Q, R, x, P, predicted, filtered, smoothed)
     end
 end
 
@@ -67,11 +75,29 @@ P is a (T x m x m) array of state covariances
 Σ is a (T x p x p) matrix of measurement covariances
 """
 
-mutable struct Output
+abstract type Output end
+
+mutable struct Predicted <: Output
     x::Matrix{AbstractFloat}
     P::Array{AbstractFloat, 3}
     μ::Matrix{AbstractFloat}
     Σ::Array{AbstractFloat, 3}
 end
 
-Output(T::Int, p::Int, m::Int) = Output(zeros(T, m), zeros(T, m, m), zeros(T, p), zeros(T, p, p))
+mutable struct Filtered <: Output
+    x::Matrix{AbstractFloat}
+    P::Array{AbstractFloat, 3}
+    μ::Matrix{AbstractFloat}
+    Σ::Array{AbstractFloat, 3}
+end
+
+mutable struct Smoothed <: Output
+    x::Matrix{AbstractFloat}
+    P::Array{AbstractFloat, 3}
+    μ::Matrix{AbstractFloat}
+    Σ::Array{AbstractFloat, 3}
+end
+
+Predicted(T::Int, p::Int, m::Int) = Predicted(zeros(T, m), zeros(T, m, m), zeros(T, p), zeros(T, p, p))
+Filtered(T::Int, p::Int, m::Int)  = Filtered(zeros(T, m), zeros(T, m, m), zeros(T, p), zeros(T, p, p))
+Smoothed(T::Int, p::Int, m::Int)  = Smoothed(zeros(T, m), zeros(T, m, m), zeros(T, p), zeros(T, p, p))

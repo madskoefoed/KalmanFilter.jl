@@ -1,6 +1,6 @@
 """
 ```
-Simulate(Model)
+Simulate!(Model)
 ```
 
 Takes as input the type Model and simulates a state space model based on the specification in Model.
@@ -8,7 +8,7 @@ Takes as input the type Model and simulates a state space model based on the spe
 The function returns y and x containing the observation and state matrices.
 """
 
-function simulate(model::Model)
+function simulate!(model::Model)
     T, p = size(model.y)
     m = length(model.x)
 
