@@ -41,17 +41,18 @@ mutable struct Model
 end
 
 # Outer constructors for univariate measurement
-Model(y::Vector, H::Vector, A::Matrix, Q::Matrix, R::Real, x::Vector, P::Matrix) = Model(repeat(y, 1, 1), reshape(H, 1, length(H)), A, Q, fill(R, 1, 1), x, P)
-Model(y::Vector, H::Real, A::Real, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), fill(H, 1, 1), fill(A, 1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
+Model(y::Vector{<:Real}, H::Vector{<:Real}, A::Matrix{<:Real}, Q::Matrix{<:Real}, R::Real, x::Vector{<:Real}, P::Matrix{<:Real}) = Model(repeat(y, 1, 1), reshape(H, 1, length(H)), A, Q, fill(R, 1, 1), x, P)
+Model(y::Vector{<:Real}, H::Real, A::Real, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), fill(H, 1, 1), fill(A, 1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
 
 # Univariate state
-Model(y::Matrix, H::Matrix, A::Real, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, H, fill(A, 1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
+Model(y::Matrix{<:Real}, H::Matrix{<:Real}, A::Real, Q::Real, R::Matrix{<:Real}, x::Real, P::Real) = Model(y, H, fill(A, 1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
 
 # Special constructors
-LocalLevel(y::Vector, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
-LocalLevel(y::Matrix, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, ones(size(y, 2), 1), ones(1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
-LocalLevel(y::Vector, Q::Real, R::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [y[1]], fill(1000.0, 1, 1))
-LocalLevel(y::Matrix, Q::Real, R::Matrix) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), R, [y[1]], fill(1000.0, 1, 1))
+LocalLevel(y::Vector{<:Real}, Q::Real, R::Real, x::Real, P::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [x], fill(P, 1, 1))
+LocalLevel(y::Matrix{<:Real}, Q::Real, R::Matrix, x::Real, P::Real) = Model(y, ones(size(y, 2), 1), ones(1, 1), fill(Q, 1, 1), R, [x], fill(P, 1, 1))
+
+LocalLevel(y::Vector{<:Real}, Q::Real, R::Real) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), fill(R, 1, 1), [y[1]], fill(1000.0, 1, 1))
+LocalLevel(y::Matrix{<:Real}, Q::Real, R::Matrix) = Model(repeat(y, 1, 1), ones(1, 1), ones(1, 1), fill(Q, 1, 1), R, [0.0], fill(1000.0, 1, 1))
 
 """
 ```
